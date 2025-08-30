@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Selesai 💖</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    body{
+      margin:0;
+      height:100vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      font-family:'Poppins', sans-serif;
+      background:linear-gradient(135deg, #c084fc, #f9a8d4);
+      color:#fff;
+      text-align:center;
+      overflow:hidden;
+    }
+    h1{
+      font-size:2rem;
+      margin-bottom:10px;
+      animation: fadeInDown 1.2s ease;
+    }
+    p{
+      font-size:1.1rem;
+      max-width:320px;
+      line-height:1.6;
+      animation: fadeIn 2s ease;
+    }
+    .heart{
+      font-size:3rem;
+      margin:20px 0;
+      animation: pulse 1.5s infinite;
+    }
+    .btn{
+      margin-top:20px;
+      padding:10px 20px;
+      border:none;
+      border-radius:999px;
+      background:#fff;
+      color:#c084fc;
+      font-weight:600;
+      cursor:pointer;
+      text-decoration:none;
+      box-shadow:0 5px 15px rgba(0,0,0,0.2);
+      transition:.3s;
+    }
+    .btn:hover{
+      background:#f9a8d4;
+      color:#fff;
+    }
+
+    /* animasi */
+    @keyframes pulse {
+      0%{ transform:scale(1);}
+      50%{ transform:scale(1.2);}
+      100%{ transform:scale(1);}
+    }
+    @keyframes fadeInDown {
+      from{opacity:0; transform:translateY(-20px);}
+      to{opacity:1; transform:translateY(0);}
+    }
+    @keyframes fadeIn {
+      from{opacity:0;}
+      to{opacity:1;}
+    }
+
+    /* confetti background */
+    .confetti {
+      position:absolute;
+      top:0; left:0;
+      width:100%; height:100%;
+      overflow:hidden; pointer-events:none;
+      z-index:-1;
+    }
+    .confetti span {
+      position:absolute;
+      width:8px; height:8px;
+      background:#fff;
+      animation: fall 6s linear infinite;
+    }
+    @keyframes fall {
+      0%{ transform:translateY(-10vh) rotate(0deg); opacity:1; }
+      100%{ transform:translateY(110vh) rotate(720deg); opacity:0; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Makasih yaa masss 💕</h1>
+  <div class="heart">💖</div>
+  <p>
+    Adek cuma mau bilang makasih sudah berjuang bareng sampai sini.  
+    mas hebat banget bisa kuat sama adek hehe, dan adek bangga punya mas.  
+    Semoga kita selalu sama-sama yaa 🤍
+  </p>
+  <a href="index.html" class="btn">Kembali</a>
+
+  <!-- confetti -->
+  <div class="confetti">
+    <!-- bikin beberapa potongan confetti -->
+    <span style="left:10%;animation-delay:0s;"></span>
+    <span style="left:20%;animation-delay:1s;"></span>
+    <span style="left:35%;animation-delay:2s;"></span>
+    <span style="left:50%;animation-delay:.5s;"></span>
+    <span style="left:65%;animation-delay:1.5s;"></span>
+    <span style="left:80%;animation-delay:.8s;"></span>
+    <span style="left:90%;animation-delay:2.2s;"></span>
+  </div>
+</body>
+</html>

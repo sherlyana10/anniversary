@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Labirin Cinta 💕</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #c084fc, #f9a8d4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 10px;
+    }
+
+    h1 {
+      color: white;
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+      text-align: center;
+    }
+
+    canvas {
+      border: 3px solid white;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.2);
+    }
+
+    #nextBtn {
+      display: none;
+      margin-top: 15px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      background: white;
+      color: #c084fc;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 0.9rem;
+    }
+
+    #nextBtn:hover {
+      background: #f9a8d4;
+      color: white;
+    }
+
+    /* Tombol kontrol */
+    .controls {
+      margin-top: 15px;
+      display: grid;
+      grid-template-columns: 60px 60px 60px;
+      grid-template-rows: 60px 60px;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .controls button {
+      border: none;
+      border-radius: 10px;
+      background: white;
+      color: #c084fc;
+      font-size: 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .controls button:active {
+      background: #f9a8d4;
+      color: white;
+    }
+
+    .controls .up {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .controls .left {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    .controls .down {
+      grid-column: 2;
+      grid-row: 2;
+    }
+
+    .controls .right {
+      grid-column: 3;
+      grid-row: 2;
+    }
+  </style>
+</head>
+<body>
+  <h1>Labirin Cinta 💖</h1>
+  <canvas id="mazeCanvas" width="300" height="300"></canvas>
+  <button id="nextBtn" onclick="window.location.href='puzzel.html'">Lanjut ke Puzzle ➡️</button>
+
+  <!-- Kontrol Tombol -->
+  <div class="controls">
+    <button class="up" onclick="move(0,-1)">⬆️</button>
+    <button class="left" onclick="move(-1,0)">⬅️</button>
+    <button class="down" onclick="move(0,1)">⬇️</button>
+    <button class="right" onclick="move(1,0)">➡️</button>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("mazeCanvas");
+    const ctx = canvas.getContext("2d");
+
+    // Maze sederhana (muat di HP)
+    const maze = [
+      "###########",
+      "#S     #  #",
+      "# ### ### #",
+      "#   #     #",
+      "### ##### #",
+      "#     #   #",
+      "# ### ### #",
+      "#   #   #E#",
+      "###########",
+    ];
+
+    const cellSize = 30;
+    const player = { x: 1, y: 1 };
+
+    function drawMaze() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.font = "20px Arial";
+      ctx.textBaseline = "top";
+
+      for (let y = 0; y < maze.length; y++) {
+        for (let x = 0; x < maze[y].length; x++) {
+          if (maze[y][x] === "#") {
+            ctx.fillStyle = "rgba(255,255,255,0.9)";
+            ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+          } else if (maze[y][x] === "E") {
+            ctx.fillText("❤️", x * cellSize + 5, y * cellSize + 2);
+          }
+        }
+      }
+
+      // Player 👦
+      ctx.fillText("👦", player.x * cellSize + 5, player.y * cellSize + 2);
+    }
+
+    function move(dx, dy) {
+      const newX = player.x + dx;
+      const newY = player.y + dy;
+
+      if (maze[newY][newX] !== "#") {
+        player.x = newX;
+        player.y = newY;
+        drawMaze();
+
+        if (maze[newY][newX] === "E") {
+          document.getElementById("nextBtn").style.display = "block";
+        }
+      }
+    }
+
+    // Keyboard kontrol
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowUp") move(0, -1);
+      if (e.key === "ArrowDown") move(0, 1);
+      if (e.key === "ArrowLeft") move(-1, 0);
+      if (e.key === "ArrowRight") move(1, 0);
+    });
+
+    drawMaze();
+  </script>
+</body>
+</html>

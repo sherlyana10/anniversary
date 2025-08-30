@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kenangan Kita</title>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;500;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #d16ba5, #86a8e7, #5ffbf1);
+      min-height: 100vh;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+    }
+
+    p {
+      font-size: 1rem;
+      margin-bottom: 25px;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      overflow: hidden;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    .card img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .card p {
+      padding: 12px;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+
+    .btn-group {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: 2px solid #fff;
+      border-radius: 30px;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: #fff;
+      color: #d16ba5;
+    }
+  </style>
+</head>
+<body>
+  <h1 data-aos="fade-down">Kenangan Indah Kita 💕</h1>
+  <p data-aos="fade-up">Beberapa momen yang selalu akan aku simpan di hati.</p>
+
+  <div class="gallery">
+    <div class="card" data-aos="zoom-in">
+      <img src="foto1.jpg" alt="Kenangan 1">
+      <p>Senja pertama kita bersama 🌅</p>
+    </div>
+    <div class="card" data-aos="zoom-in" data-aos-delay="200">
+      <img src="foto2.jpg" alt="Kenangan 2">
+      <p>Tawa yang nggak akan pernah aku lupa 😍</p>
+    </div>
+    <div class="card" data-aos="zoom-in" data-aos-delay="400">
+      <img src="foto3.jpg" alt="Kenangan 3">
+      <p>Petualangan kecil kita 🚲✨</p>
+    </div>
+  </div>
+
+  <!-- Tombol navigasi -->
+  <div class="btn-group" data-aos="fade-up">
+    <a href="index.html" class="btn">⬅ Kembali</a>
+    <a href="quiz.html" class="btn">Lanjut ➡</a>
+  </div>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 1000,
+      once: true
+    });
+  </script>
+</body>
+</html>

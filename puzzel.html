@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Puzzle Cinta Kita 🧩💕</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    :root{
+      --pink:#f9a8d4;
+      --purple:#c084fc;
+      --glass:rgba(255,255,255,.22);
+      --white:#fff;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:14px;
+      padding:16px;
+      font-family:Poppins, system-ui, -apple-system, sans-serif;
+      color:#fff;
+      text-align:center;
+      background:linear-gradient(135deg, var(--purple), var(--pink));
+    }
+
+    h1{margin:4px 0 0;font-size:1.25rem;letter-spacing:.3px}
+    p.sub{margin:0 0 6px;opacity:.9;font-size:.9rem}
+
+    .board-wrap{
+      position:relative;
+      width:min(92vw, 360px);
+      aspect-ratio:1/1;
+      border:3px solid var(--white);
+      border-radius:18px;
+      overflow:hidden;
+      background:var(--glass);
+      backdrop-filter: blur(6px);
+      box-shadow:0 8px 24px rgba(0,0,0,.18);
+      touch-action:manipulation;
+    }
+
+    /* grid tiles */
+    #board{
+      position:absolute; inset:0;
+      display:grid;
+      user-select:none;
+    }
+    .tile{
+      position:relative;
+      border:1px solid rgba(255,255,255,.35);
+      background-size:100% 100%;
+      background-repeat:no-repeat;
+      display:flex; align-items:center; justify-content:center;
+      font-weight:700; color:rgba(255,255,255,.0); /* nomor disembunyikan, tinggalin kalau mau debug */
+      transition:transform .12s ease;
+      will-change:transform;
+      border-radius:8px;
+    }
+    .empty{ background:transparent; border-color:transparent }
+
+    .controls{
+      width:min(92vw, 360px);
+      display:flex; gap:8px; flex-wrap:wrap; justify-content:center;
+    }
+    .btn, .select, .file{
+      padding:10px 14px; border-radius:999px; border:2px solid #fff;
+      background:var(--glass); color:#fff; font-weight:600;
+      backdrop-filter: blur(6px); cursor:pointer; transition:.25s;
+    }
+    .btn:hover{ background:#fff; color:var(--purple) }
+    .select, .file{ border-style:solid }
+    .select{ appearance:none; }
+    .file{ padding:8px 12px; }
+    .small{ padding:8px 12px; font-size:.85rem }
+
+    .stats{
+      display:flex; gap:12px; justify-content:center; align-items:center;
+      width:min(92vw, 360px);
+      font-size:.95rem;
+    }
+    .chip{
+      padding:6px 12px; border-radius:999px; background:var(--glass); border:1.5px solid #fff;
+      backdrop-filter: blur(6px);
+    }
+
+    /* success modal */
+    .overlay{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.35); }
+    .modal{
+      width:min(90vw, 360px);
+      background:linear-gradient(135deg, #a78bfa, #f0abfc);
+      border:3px solid #fff; border-radius:20px; padding:18px; color:#fff;
+      box-shadow:0 10px 30px rgba(0,0,0,.25); text-align:center;
+    }
+    .modal h3{ margin:4px 0 10px }
+    .modal p{ margin:0 0 12px }
+    .modal .actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap }
+    .modal .actions a, .modal .actions button{
+      border:2px solid #fff; background:#fff; color:#8b5cf6; border-radius:999px; padding:10px 14px; font-weight:700; cursor:pointer;
+    }
+
+    /* confetti canvas */
+    #confetti{ position:fixed; inset:0; pointer-events:none; }
+
+  </style>
+</head>
+<body>
+  <h1>Puzzle Cinta Kita 🧩💕</h1>
+  <p class="sub">Susun fotonya sampai utuh yaaa</p>
+
+  <div class="board-wrap">
+    <div id="board" aria-label="puzzle board"></div>
+  </div>
+
+  <div class="stats">
+    <span class="chip">Langkah: <b id="moves">0</b></span>
+    <span class="chip">Waktu: <b id="time">00:00</b></span>
+    <label class="chip file">
+      <input id="file" type="file" accept="image/*" hidden>
+      Ganti Foto
+    </label>
+    <select id="size" class="chip select">
+      <option value="3">3 × 3</option>
+      <option value="4">4 × 4</option>
+    </select>
+  </div>
+
+  <div class="controls">
+    <button class="btn small" id="shuffleBtn">Acak Ulang</button>
+    <button class="btn small" id="hintBtn">Lihat Contoh</button>
+    <a class="btn small" href="index.html">Kembali</a>
+  </div>
+
+  <!-- success -->
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <h3>Yeaay! Selesai 🎉</h3>
+      <p>Kamu berhasil nyusun foto kita 💖</p>
+      <div class="actions">
+        <button onclick="startGame()">Main Lagi</button>
+        <a href="selesai.html">lanjut</a>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="confetti"></canvas>
+
+  <script>
+    // ======= Setup =======
+    const board = document.getElementById('board');
+    const movesEl = document.getElementById('moves');
+    const timeEl  = document.getElementById('time');
+    const fileInp = document.getElementById('file');
+    const sizeSel = document.getElementById('size');
+    const overlay = document.getElementById('overlay');
+    const shuffleBtn = document.getElementById('shuffleBtn');
+    const hintBtn = document.getElementById('hintBtn');
+
+    // Pakai foto dummy dulu – ganti file 'foto-kita.jpg' dengan fotomu
+    let imgSrc = 'fotokita.jpeg'; // taruh file ini di folder yang sama
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = imgSrc;
+    img.onload = () => startGame();
+
+    // State
+    let N = 3;                 // grid size
+    let tiles = [];            // index 0..N*N-1 (last is empty)
+    let emptyIndex;            // posisi kosong
+    let moves = 0;
+    let timer, seconds = 0;
+
+    // ======= Helpers =======
+    const pad = n => (n<10?'0':'')+n;
+    function setTimer(start=true){
+      clearInterval(timer);
+      if(!start){ timeEl.textContent='00:00'; seconds=0; return; }
+      timer = setInterval(()=>{ seconds++; timeEl.textContent = `${pad(Math.floor(seconds/60))}:${pad(seconds%60)}`; },1000);
+    }
+
+    function buildBoard(){
+      board.style.gridTemplateColumns = `repeat(${N}, 1fr)`;
+      board.style.gridTemplateRows    = `repeat(${N}, 1fr)`;
+      board.innerHTML = '';
+      const pieceW = board.clientWidth / N;
+      const pieceH = board.clientHeight / N;
+
+      for(let i=0;i<N*N;i++){
+        const div = document.createElement('div');
+        div.className = 'tile';
+        div.dataset.idx = i;
+        // hitung posisi gambar utuh untuk tile ini
+        const col = i % N, row = Math.floor(i / N);
+        div.style.backgroundImage = `url('${imgSrc}')`;
+        div.style.backgroundSize  = `${N*100}% ${N*100}%`;
+        div.style.backgroundPosition = `${(col/(N-1))*100}% ${(row/(N-1))*100}%`;
+
+        board.appendChild(div);
+      }
+    }
+
+    function shuffleSolvable(){
+      // tiles 0..N*N-2 berisi gambar, terakhir adalah empty
+      tiles = Array.from({length:N*N}, (_,i)=>i);
+      emptyIndex = tiles.length-1;
+
+      // Fisher-Yates
+      for(let i=tiles.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
+      }
+      // Pastikan solvable
+      if(!isSolvable(tiles)) [tiles[0], tiles[1]] = [tiles[1], tiles[0]];
+      emptyIndex = tiles.indexOf(N*N-1);
+      renderTiles();
+    }
+
+    function isSolvable(arr){
+      const inv = arr.reduce((acc, val, i)=>{
+        if(val===N*N-1) return acc;
+        for(let j=i+1;j<arr.length;j++){
+          if(arr[j]!==N*N-1 && arr[j] < val) acc++;
+        }
+        return acc;
+      },0);
+      if(N%2===1) return inv%2===0; // grid ganjil
+      // grid genap → perhatikan baris dari bawah (mulai 1)
+      const emptyRowFromBottom = N - Math.floor(arr.indexOf(N*N-1)/N);
+      return (emptyRowFromBottom%2===0) ? inv%2===1 : inv%2===0;
+    }
+
+    function renderTiles(){
+      const nodes = [...board.children];
+      nodes.forEach((node, i)=>{
+        const tileVal = tiles[i];
+        if(tileVal===N*N-1){
+          node.classList.add('empty');
+          node.style.backgroundImage='none';
+          node.textContent='';
+        }else{
+          node.classList.remove('empty');
+          node.style.backgroundImage = `url('${imgSrc}')`;
+          const col = tileVal % N, row = Math.floor(tileVal / N);
+          node.style.backgroundSize  = `${N*100}% ${N*100}%`;
+          node.style.backgroundPosition = `${(col/(N-1))*100}% ${(row/(N-1))*100}%`;
+        }
+      });
+    }
+
+    function indexToRC(idx){ return {r:Math.floor(idx/N), c:idx%N}; }
+    function rcToIndex(r,c){ return r*N + c; }
+
+    function tryMove(i){
+      const {r, c} = indexToRC(i);
+      const {r:er, c:ec} = indexToRC(emptyIndex);
+      const isAdj = (r===er && Math.abs(c-ec)===1) || (c===ec && Math.abs(r-er)===1);
+      if(!isAdj) return;
+
+      // swap dengan kosong
+      [tiles[i], tiles[emptyIndex]] = [tiles[emptyIndex], tiles[i]];
+      emptyIndex = i;
+      moves++; movesEl.textContent = moves;
+      renderTiles();
+      checkSolved();
+    }
+
+    function checkSolved(){
+      const ok = tiles.every((v,i)=> v===i);
+      if(ok){
+        clearInterval(timer);
+        fireConfetti();
+        overlay.style.display='flex';
+      }
+    }
+
+    function startGame(){
+      overlay.style.display='none';
+      moves=0; movesEl.textContent='0';
+      setTimer(false); setTimer(true);
+      buildBoard();
+      shuffleSolvable();
+      // reattach handlers
+      [...board.children].forEach((tile, i)=>{
+        tile.onpointerdown = ()=> tryMove(i);
+      });
+    }
+
+    // ======= Events =======
+    sizeSel.addEventListener('change', (e)=>{
+      N = parseInt(e.target.value,10);
+      startGame();
+    });
+
+    shuffleBtn.addEventListener('click', startGame);
+
+    fileInp.addEventListener('change', (e)=>{
+      const file = e.target.files?.[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        imgSrc = ev.target.result;
+        img.src = imgSrc;
+        img.onload = ()=> startGame();
+      };
+      reader.readAsDataURL(file);
+    });
+
+    hintBtn.addEventListener('click', ()=>{
+      // sementara tampilkan gambar utuh sebagai background overlay tipis
+      board.style.backgroundImage = `url('${imgSrc}')`;
+      board.style.backgroundSize = '100% 100%';
+      board.style.opacity = '.85';
+      setTimeout(()=>{
+        board.style.backgroundImage = 'none';
+        board.style.opacity = '1';
+      }, 1200);
+    });
+
+    // ======= Confetti sederhana =======
+    const cCanvas = document.getElementById('confetti');
+    const cCtx = cCanvas.getContext('2d');
+    function resizeC(){ cCanvas.width = innerWidth; cCanvas.height = innerHeight; }
+    addEventListener('resize', resizeC); resizeC();
+    let confetti = [];
+    function fireConfetti(){
+      confetti = [];
+      for(let i=0;i<160;i++){
+        confetti.push({
+          x: Math.random()*cCanvas.width,
+          y: -Math.random()*cCanvas.height,
+          r: Math.random()*5+3,
+          d: Math.random()*150+50,
+          vx: Math.random()*2-1,
+          color: ["#ff66cc","#cc66ff","#ff99cc","#b366ff"][i%4]
+        });
+      }
+      animateConfetti();
+      setTimeout(()=> confetti=[], 2200);
+    }
+    function animateConfetti(){
+      cCtx.clearRect(0,0,cCanvas.width,cCanvas.height);
+      confetti.forEach((p)=>{
+        cCtx.beginPath();
+        cCtx.fillStyle = p.color;
+        cCtx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+        cCtx.fill();
+        p.y += Math.cos(p.d) + 2.3;
+        p.x += p.vx;
+      });
+      if(confetti.length) requestAnimationFrame(animateConfetti);
+    }
+  </script>
+</body>
+</html>
